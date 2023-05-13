@@ -1,16 +1,53 @@
 import * as core from '@actions/core';
-import {wait} from './wait';
+import { ClaspWrapperImpl, ClaspWrapper } from './claspWrapper';
+import fs from 'fs';
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds');
-    core.debug(`Waiting ${ms} milliseconds ...`); // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const clasprc = core.getInput('clasprc', { required: true });
+    const scriptId = core.getInput('scriptId', { required: true });
+    const command = core.getInput('command', { required: true });
+    const description = core.getInput('description', { required: false });
+    const deploymentId = core.getInput('deploymentId', { required: false });
+    const versionNumber = core.getInput('versionNumber', {
+      required: false
+    });
+    const projectRootPath = core.getInput('projectRootPath', {
+      required: false
+    });
+    const sourceRootDir = core.getInput('sourceRootDir', {
+      required: false
+    });
+    const appsscriptJsonPath = core.getInput('appsscriptJsonPath', {
+      required: false
+    });
 
-    core.debug(new Date().toTimeString());
-    await wait(parseInt(ms, 10));
-    core.debug(new Date().toTimeString());
+    fs.writeFileSync('~/.clasprc.json', clasprc);
 
-    core.setOutput('time', new Date().toTimeString());
+    const claspWrapper: ClaspWrapper = new ClaspWrapperImpl({
+      sourceRootDir,
+      projectRootPath,
+      appsscriptJsonPath
+    });
+
+    switch (command) {
+      case 'push':
+        claspWrapper.push(scriptId);
+        break;
+      case 'deploy':
+        claspWrapper.deploy(scriptId, {
+          description,
+          deploymentId,
+          versionNumber:
+            versionNumber === undefined ? Number(versionNumber) : undefined
+        });
+        break;
+      case 'version':
+        claspWrapper.version(scriptId, { description });
+        break;
+      default:
+        throw new Error(`Unknown command: ${command}`);
+    }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message);
   }

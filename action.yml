@@ -1,11 +1,31 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Google Apps Script Action'
+description: 'Push, deploy or versioning of Google Apps Script Project using Clasp'
+author: 'Ryo Koizumi'
 inputs:
-  milliseconds: # change this
+  clasprc: # change this
+    description: 'Clasp configuration file'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  scriptId:
+    description: 'Google Apps Script Script ID'
+    required: true
+  command:
+    description: 'Command to execute (push, deploy or version)'
+    required: true
+  description:
+    description: 'Description of the deployment'
+    required: false
+  deploymentId:
+    description: 'Deployment ID'
+    required: false
+  projectRootPath:
+    description: 'Project root path'
+    required: false
+  sourceRootDir:
+    description: 'Source root directory (relative to project root)'
+    required: false
+  appsscriptJsonPath:
+    description: 'appsscript.json path'
+    required: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
