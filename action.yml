@@ -1,8 +1,8 @@
 name: 'Google Apps Script Action'
 description: 'Push, deploy or versioning of Google Apps Script Project using Clasp'
-author: 'Ryo Koizumi'
+author: 'Ryo Koizumi <koizumiryo@gmail.com>'
 inputs:
-  clasprc: # change this
+  clasprc:
     description: 'Clasp configuration file'
     required: true
   scriptId:
