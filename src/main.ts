@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import { exec } from '@actions/exec';
 import { ClaspWrapperImpl, ClaspWrapper } from './claspWrapper';
 import fs from 'fs';
 
@@ -6,7 +7,10 @@ async function run(): Promise<void> {
   try {
     const clasprc = core.getInput('clasprc', { required: true });
     const scriptId = core.getInput('scriptId', { required: true });
-    const command = core.getInput('command', { required: true });
+    const command = core.getInput('command', {
+      required: true,
+      trimWhitespace: true
+    });
     const description = core.getInput('description', { required: false });
     const deploymentId = core.getInput('deploymentId', { required: false });
     const versionNumber = core.getInput('versionNumber', {
@@ -21,6 +25,11 @@ async function run(): Promise<void> {
     const appsscriptJsonPath = core.getInput('appsscriptJsonPath', {
       required: false
     });
+
+    if (command === 'check') {
+      exec('./node_modules/.bin/clasp', ['--version']);
+      return;
+    }
 
     fs.writeFileSync('~/.clasprc.json', clasprc);
 

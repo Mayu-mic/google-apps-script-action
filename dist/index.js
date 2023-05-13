@@ -117,6 +117,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
+const exec_1 = __nccwpck_require__(514);
 const claspWrapper_1 = __nccwpck_require__(105);
 const fs_1 = __importDefault(__nccwpck_require__(147));
 function run() {
@@ -124,7 +125,10 @@ function run() {
         try {
             const clasprc = core.getInput('clasprc', { required: true });
             const scriptId = core.getInput('scriptId', { required: true });
-            const command = core.getInput('command', { required: true });
+            const command = core.getInput('command', {
+                required: true,
+                trimWhitespace: true
+            });
             const description = core.getInput('description', { required: false });
             const deploymentId = core.getInput('deploymentId', { required: false });
             const versionNumber = core.getInput('versionNumber', {
@@ -139,6 +143,10 @@ function run() {
             const appsscriptJsonPath = core.getInput('appsscriptJsonPath', {
                 required: false
             });
+            if (command === 'check') {
+                (0, exec_1.exec)('./node_modules/.bin/clasp', ['--version']);
+                return;
+            }
             fs_1.default.writeFileSync('~/.clasprc.json', clasprc);
             const claspWrapper = new claspWrapper_1.ClaspWrapperImpl({
                 sourceRootDir,
