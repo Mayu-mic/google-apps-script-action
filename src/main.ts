@@ -27,7 +27,7 @@ async function run(): Promise<void> {
     });
 
     if (command === 'check') {
-      exec('./node_modules/.bin/clasp', ['--version']);
+      exec('clasp', ['--version']);
       return;
     }
 

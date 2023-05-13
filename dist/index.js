@@ -144,7 +144,7 @@ function run() {
                 required: false
             });
             if (command === 'check') {
-                (0, exec_1.exec)('./node_modules/.bin/clasp', ['--version']);
+                (0, exec_1.exec)('clasp', ['--version']);
                 return;
             }
             fs_1.default.writeFileSync('~/.clasprc.json', clasprc);

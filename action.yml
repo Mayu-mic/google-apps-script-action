@@ -27,5 +27,5 @@ inputs:
     description: 'appsscript.json path'
     required: false
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: 'docker'
+  image: Dockerfile
