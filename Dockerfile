@@ -7,4 +7,4 @@ COPY dist /dist
 RUN npm install -g @google/clasp
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["node", "./dist/index.js"]
+ENTRYPOINT ["node", "/dist/index.js"]
