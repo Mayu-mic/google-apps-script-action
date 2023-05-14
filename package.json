@@ -1,5 +1,5 @@
 {
-  "name": "google-apps-script-github-action",
+  "name": "google-apps-script-action",
   "version": "0.0.0",
   "private": true,
   "description": "GitHub Action for Google Apps Script",

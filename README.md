@@ -1,105 +1,78 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+Google Apps Script Action
+===
 
-# Create a JavaScript Action using TypeScript
+Github Action for pushing and deploying Google Apps Script projects using [clasp](https://github.com/google/clasp).
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+This action creates a `.clasp.json` file according to the input settings. Therefore, it is recommended that the original `.clasp.json` be added to `.gitignore`.
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+Inputs
+---
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+### `clasprc`
 
-## Create an action from this template
+**Required** Clasp configuration file.
 
-Click the `Use this Template` and provide the new repo details for your action
+### `scriptId`
 
-## Code in Main
+**Required** Google Apps Script: Script ID
 
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
+### `command`
 
-Install the dependencies  
-```bash
-$ npm install
-```
+**Required** Command to execute (push, deploy or version)
 
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
+### `description`
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+Description of the deployment.
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+### `deploymentId`
 
-...
-```
+Deployment ID
 
-## Change action.yml
+### `projectRootPath`
 
-The action.yml defines the inputs and output for your action.
+Project root path.
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+### `sourceRootDir`
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
+Root directory of script source (relative to project root).
 
-## Change the Code
+### `appsscriptJsonPath`
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
+The path to appsscript.json. If specified, the file will be changed to the specified file when the command is executed.
 
-```javascript
-import * as core from '@actions/core';
-...
+Example usage
+---
 
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+### Push
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+- uses: Mayu-mic/google-apps-script-action@v1
+  with:
+    clasprc: ${{ secrets.CLASPRC_JSON }}
+    scriptId: ${{ secrets.SCRIPT_ID }}
+    command: 'push'
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+### Deploy with deployment id and description
 
-## Usage:
+```yaml
+- uses: Mayu-mic/google-apps-script-action@v1
+  with:
+    clasprc: ${{ secrets.CLASPRC_JSON }}
+    scriptId: ${{ secrets.SCRIPT_ID }}
+    command: 'deploy'
+    deploymentId: ${{ secrets.DEPLOYMENT_ID }}
+    description: 'Deployment description'
+```
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+### Versioning Library
+
+```yaml
+- uses: Mayu-mic/google-apps-script-action@v1
+  with:
+    clasprc: ${{ secrets.CLASPRC_JSON }}
+    scriptId: ${{ secrets.SCRIPT_ID }}
+    command: 'version'
+    sourceRootDir: 'src'
+    description: 'Update features'
+```
