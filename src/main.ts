@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import { ClaspWrapperImpl, ClaspWrapper } from './claspWrapper';
 import fs from 'fs';
+import path from 'path';
 
 async function run(): Promise<void> {
   try {
@@ -31,7 +32,8 @@ async function run(): Promise<void> {
       return;
     }
 
-    fs.writeFileSync('~/.clasprc.json', clasprc);
+    const homeDir = process.env.HOME ?? '.';
+    fs.writeFileSync(path.join(homeDir, '.clasprc.json'), clasprc);
 
     const claspWrapper: ClaspWrapper = new ClaspWrapperImpl({
       sourceRootDir,

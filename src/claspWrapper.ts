@@ -1,7 +1,7 @@
 import path from 'path';
 import { exec } from '@actions/exec';
-import core from '@actions/core';
-import io from '@actions/io';
+import * as core from '@actions/core';
+import * as io from '@actions/io';
 import fs from 'fs';
 
 export interface ClaspWrapper {
