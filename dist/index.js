@@ -102,7 +102,7 @@ class ClaspWrapperImpl {
                 if (versionMatch) {
                     versionNumber = Number(versionMatch[1]);
                 }
-                const deploymentIdMatch = line.match(/-\s([a-zA-Z0-9]+)\s@\d+\./);
+                const deploymentIdMatch = line.match(/- ([\w-_]+) @\d+\./);
                 if (deploymentIdMatch) {
                     deploymentId = deploymentIdMatch[1];
                 }
