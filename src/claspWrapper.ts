@@ -84,7 +84,6 @@ export class ClaspWrapperImpl implements ClaspWrapper {
       cwd: this.projectRootPath
     });
 
-    core.info(response.stdout);
     let versionNumber: number | undefined = undefined;
     let deploymentId: string | undefined = undefined;
     for (const line of response.stdout.split('\n')) {
