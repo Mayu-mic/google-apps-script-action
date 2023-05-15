@@ -86,7 +86,7 @@ export class ClaspWrapperImpl implements ClaspWrapper {
 
     let versionNumber: number | undefined = undefined;
     let deploymentId: string | undefined = undefined;
-    for (const line of response.stderr.split('\n')) {
+    for (const line of response.stdout.split('\n')) {
       const versionMatch = line.match(/Created version (\d+)\./);
       if (versionMatch) {
         versionNumber = Number(versionMatch[1]);
