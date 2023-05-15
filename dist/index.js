@@ -94,7 +94,6 @@ class ClaspWrapperImpl {
             const response = yield (0, exec_1.getExecOutput)('clasp', args, {
                 cwd: this.projectRootPath
             });
-            core.info(response.stdout);
             let versionNumber = undefined;
             let deploymentId = undefined;
             for (const line of response.stdout.split('\n')) {
