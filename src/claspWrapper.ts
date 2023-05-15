@@ -1,13 +1,13 @@
 import path from 'path';
-import { exec } from '@actions/exec';
+import { getExecOutput } from '@actions/exec';
 import * as core from '@actions/core';
 import * as io from '@actions/io';
 import fs from 'fs';
 
 export interface ClaspWrapper {
-  push(scriptId: string): void;
-  deploy(scriptId: string, option: DeployOption): void;
-  version(scriptId: string, option: VersionOption): void;
+  push(scriptId: string): Promise<void>;
+  deploy(scriptId: string, option: DeployOption): Promise<ClaspOutput>;
+  version(scriptId: string, option: VersionOption): Promise<ClaspOutput>;
 }
 
 interface ClaspOption {
@@ -31,6 +31,11 @@ interface ClaspJson {
   rootDir?: string;
 }
 
+interface ClaspOutput {
+  versionNumber?: number;
+  deploymentId?: string;
+}
+
 export class ClaspWrapperImpl implements ClaspWrapper {
   private sourceRootDir: string;
   private projectRootPath: string;
@@ -42,16 +47,16 @@ export class ClaspWrapperImpl implements ClaspWrapper {
     this.appsscriptJsonPath = claspOption.appsscriptJsonPath;
   }
 
-  push(scriptId: string): void {
+  async push(scriptId: string): Promise<void> {
     if (this.appsscriptJsonPath) {
-      this.setupAppsScriptJson(this.appsscriptJsonPath);
+      await this.setupAppsScriptJson(this.appsscriptJsonPath);
     }
     this.createClaspJson(scriptId);
-    this.execClasp(['push', '-f']);
+    await this.execClasp(['push', '-f']);
   }
 
-  deploy(scriptId: string, option: DeployOption): void {
-    this.push(scriptId);
+  async deploy(scriptId: string, option: DeployOption): Promise<ClaspOutput> {
+    await this.push(scriptId);
     const args: string[] = ['deploy'];
     if (option.deploymentId) {
       args.push('-i', option.deploymentId);
@@ -62,26 +67,43 @@ export class ClaspWrapperImpl implements ClaspWrapper {
     if (option.versionNumber) {
       args.push('-V', option.versionNumber.toString());
     }
-    this.execClasp(args);
+    return await this.execClasp(args);
   }
 
-  version(scriptId: string, option: VersionOption): void {
-    this.push(scriptId);
+  async version(scriptId: string, option: VersionOption): Promise<ClaspOutput> {
+    await this.push(scriptId);
     const args: string[] = ['version'];
     if (option.description) {
       args.push(option.description);
     }
-    this.execClasp(args);
+    return await this.execClasp(args);
   }
 
-  private execClasp(args: string[]): void {
-    exec('clasp', args, {
+  private async execClasp(args: string[]): Promise<ClaspOutput> {
+    const response = await getExecOutput('clasp', args, {
       cwd: this.projectRootPath
     });
+
+    let versionNumber: number | undefined = undefined;
+    let deploymentId: string | undefined = undefined;
+    for (const line of response.stderr.split('\n')) {
+      const versionMatch = line.match(/Created version (\d+)\./);
+      if (versionMatch) {
+        versionNumber = Number(versionMatch[1]);
+      }
+      const deploymentIdMatch = line.match(/-\s([a-zA-Z0-9]+)\s@\d+\./);
+      if (deploymentIdMatch) {
+        deploymentId = deploymentIdMatch[1];
+      }
+    }
+    return {
+      versionNumber,
+      deploymentId
+    };
   }
 
-  private setupAppsScriptJson(appsscriptJsonPath: string): void {
-    io.cp(
+  private async setupAppsScriptJson(appsscriptJsonPath: string): Promise<void> {
+    await io.cp(
       appsscriptJsonPath,
       path.join(this.projectRootPath, this.sourceRootDir, 'appsscript.json')
     );

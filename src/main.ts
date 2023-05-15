@@ -28,7 +28,7 @@ async function run(): Promise<void> {
     });
 
     if (command === 'check') {
-      exec('clasp', ['--version']);
+      await exec('clasp', ['--version']);
       return;
     }
 
@@ -43,19 +43,29 @@ async function run(): Promise<void> {
 
     switch (command) {
       case 'push':
-        claspWrapper.push(scriptId);
+        await claspWrapper.push(scriptId);
         break;
-      case 'deploy':
-        claspWrapper.deploy(scriptId, {
-          description,
-          deploymentId,
-          versionNumber:
-            versionNumber === undefined ? Number(versionNumber) : undefined
-        });
+      case 'deploy': {
+        const { versionNumber: newVersion, deploymentId: newDeploymentId } =
+          await claspWrapper.deploy(scriptId, {
+            description,
+            deploymentId,
+            versionNumber:
+              versionNumber === undefined ? Number(versionNumber) : undefined
+          });
+        core.setOutput('versionNumber', newVersion ?? '');
+        core.setOutput('deploymentId', newDeploymentId ?? '');
         break;
-      case 'version':
-        claspWrapper.version(scriptId, { description });
+      }
+      case 'version': {
+        const { versionNumber: newVersion, deploymentId: newDeploymentId } =
+          await claspWrapper.version(scriptId, {
+            description
+          });
+        core.setOutput('versionNumber', newVersion ?? '');
+        core.setOutput('deploymentId', newDeploymentId ?? '');
         break;
+      }
       default:
         throw new Error(`Unknown command: ${command}`);
     }
@@ -64,4 +74,5 @@ async function run(): Promise<void> {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run();

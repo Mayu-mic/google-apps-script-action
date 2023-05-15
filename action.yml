@@ -1,31 +1,36 @@
-name: 'Google Apps Script Action'
-description: 'Push, deploy or versioning of Google Apps Script Project using Clasp'
-author: 'Ryo Koizumi <koizumiryo@gmail.com>'
+name: "Google Apps Script Action"
+description: "Push, deploy or versioning of Google Apps Script Project using Clasp"
+author: "Ryo Koizumi <koizumiryo@gmail.com>"
 inputs:
   clasprc:
-    description: 'Clasp configuration file'
+    description: "Clasp configuration file"
     required: true
   scriptId:
-    description: 'Google Apps Script Script ID'
+    description: "Google Apps Script Script ID"
     required: true
   command:
-    description: 'Command to execute (push, deploy or version)'
+    description: "Command to execute (push, deploy or version)"
     required: true
   description:
-    description: 'Description of the deployment'
+    description: "Description of the deployment"
     required: false
   deploymentId:
-    description: 'Deployment ID'
+    description: "Deployment ID"
     required: false
   projectRootPath:
-    description: 'Project root path'
+    description: "Project root path"
     required: false
   sourceRootDir:
-    description: 'Source root directory (relative to project root)'
+    description: "Source root directory (relative to project root)"
     required: false
   appsscriptJsonPath:
-    description: 'appsscript.json path'
+    description: "appsscript.json path"
     required: false
+outputs:
+  deploymentId:
+    description: "Created deployment ID (when only deploy command)"
+  versionNumber:
+    description: "Created version number (when only deploy and version)"
 runs:
-  using: 'docker'
+  using: "docker"
   image: Dockerfile

@@ -40,6 +40,17 @@ Root directory of script source (relative to project root).
 
 The path to appsscript.json. If specified, the file will be changed to the specified file when the command is executed.
 
+Outputs
+---
+
+### `deploymentId`
+
+Created deployment ID (when only deploy command)
+
+### `versionNumber`
+
+Created version number (when only deploy and version)
+
 Example usage
 ---
 
