@@ -29,6 +29,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -46,42 +55,68 @@ class ClaspWrapperImpl {
         this.appsscriptJsonPath = claspOption.appsscriptJsonPath;
     }
     push(scriptId) {
-        if (this.appsscriptJsonPath) {
-            this.setupAppsScriptJson(this.appsscriptJsonPath);
-        }
-        this.createClaspJson(scriptId);
-        this.execClasp(['push', '-f']);
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.appsscriptJsonPath) {
+                yield this.setupAppsScriptJson(this.appsscriptJsonPath);
+            }
+            this.createClaspJson(scriptId);
+            yield this.execClasp(['push', '-f']);
+        });
     }
     deploy(scriptId, option) {
-        this.push(scriptId);
-        const args = ['deploy'];
-        if (option.deploymentId) {
-            args.push('-i', option.deploymentId);
-        }
-        if (option.description) {
-            args.push('-d', option.description);
-        }
-        if (option.versionNumber) {
-            args.push('-V', option.versionNumber.toString());
-        }
-        this.execClasp(args);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.push(scriptId);
+            const args = ['deploy'];
+            if (option.deploymentId) {
+                args.push('-i', option.deploymentId);
+            }
+            if (option.description) {
+                args.push('-d', option.description);
+            }
+            if (option.versionNumber) {
+                args.push('-V', option.versionNumber.toString());
+            }
+            return yield this.execClasp(args);
+        });
     }
     version(scriptId, option) {
-        this.push(scriptId);
-        const args = ['version'];
-        if (option.description) {
-            args.push(option.description);
-        }
-        this.execClasp(args);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.push(scriptId);
+            const args = ['version'];
+            if (option.description) {
+                args.push(option.description);
+            }
+            return yield this.execClasp(args);
+        });
     }
     execClasp(args) {
-        (0, exec_1.exec)('clasp', args, {
-            cwd: this.projectRootPath
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield (0, exec_1.getExecOutput)('clasp', args, {
+                cwd: this.projectRootPath
+            });
+            let versionNumber = undefined;
+            let deploymentId = undefined;
+            for (const line of response.stderr.split('\n')) {
+                const versionMatch = line.match(/Created version (\d+)\./);
+                if (versionMatch) {
+                    versionNumber = Number(versionMatch[1]);
+                }
+                const deploymentIdMatch = line.match(/-\s([a-zA-Z0-9]+)\s@\d+\./);
+                if (deploymentIdMatch) {
+                    deploymentId = deploymentIdMatch[1];
+                }
+            }
+            return {
+                versionNumber,
+                deploymentId
+            };
         });
     }
     setupAppsScriptJson(appsscriptJsonPath) {
-        io.cp(appsscriptJsonPath, path_1.default.join(this.projectRootPath, this.sourceRootDir, 'appsscript.json'));
-        core.debug(`appsscript.json generated: ${appsscriptJsonPath}`);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield io.cp(appsscriptJsonPath, path_1.default.join(this.projectRootPath, this.sourceRootDir, 'appsscript.json'));
+            core.debug(`appsscript.json generated: ${appsscriptJsonPath}`);
+        });
     }
     createClaspJson(scriptId) {
         const json = {
@@ -169,7 +204,7 @@ function run() {
                 required: false
             });
             if (command === 'check') {
-                (0, exec_1.exec)('clasp', ['--version']);
+                yield (0, exec_1.exec)('clasp', ['--version']);
                 return;
             }
             const homeDir = (_a = process.env.HOME) !== null && _a !== void 0 ? _a : '.';
@@ -181,18 +216,26 @@ function run() {
             });
             switch (command) {
                 case 'push':
-                    claspWrapper.push(scriptId);
+                    yield claspWrapper.push(scriptId);
                     break;
-                case 'deploy':
-                    claspWrapper.deploy(scriptId, {
+                case 'deploy': {
+                    const { versionNumber: newVersion, deploymentId: newDeploymentId } = yield claspWrapper.deploy(scriptId, {
                         description,
                         deploymentId,
                         versionNumber: versionNumber === undefined ? Number(versionNumber) : undefined
                     });
+                    core.setOutput('versionNumber', newVersion !== null && newVersion !== void 0 ? newVersion : '');
+                    core.setOutput('deploymentId', newDeploymentId !== null && newDeploymentId !== void 0 ? newDeploymentId : '');
                     break;
-                case 'version':
-                    claspWrapper.version(scriptId, { description });
+                }
+                case 'version': {
+                    const { versionNumber: newVersion, deploymentId: newDeploymentId } = yield claspWrapper.version(scriptId, {
+                        description
+                    });
+                    core.setOutput('versionNumber', newVersion !== null && newVersion !== void 0 ? newVersion : '');
+                    core.setOutput('deploymentId', newDeploymentId !== null && newDeploymentId !== void 0 ? newDeploymentId : '');
                     break;
+                }
                 default:
                     throw new Error(`Unknown command: ${command}`);
             }
@@ -203,6 +246,7 @@ function run() {
         }
     });
 }
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run();
 
 
