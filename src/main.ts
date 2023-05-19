@@ -26,6 +26,9 @@ async function run(): Promise<void> {
     const appsscriptJsonPath = core.getInput('appsscriptJsonPath', {
       required: false
     });
+    const claspJsonTemplatePath = core.getInput('claspJsonTemplatePath', {
+      required: false
+    });
 
     if (command === 'check') {
       await exec('clasp', ['--version']);
@@ -38,7 +41,8 @@ async function run(): Promise<void> {
     const claspWrapper: ClaspWrapper = new ClaspWrapperImpl({
       sourceRootDir,
       projectRootPath,
-      appsscriptJsonPath
+      appsscriptJsonPath,
+      claspJsonTemplatePath
     });
 
     switch (command) {

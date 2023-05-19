@@ -50,9 +50,10 @@ const io = __importStar(__nccwpck_require__(436));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 class ClaspWrapperImpl {
     constructor(claspOption = {}) {
-        this.sourceRootDir = claspOption.sourceRootDir || '.';
         this.projectRootPath = claspOption.projectRootPath || '.';
+        this.sourceRootDir = claspOption.sourceRootDir;
         this.appsscriptJsonPath = claspOption.appsscriptJsonPath;
+        this.claspJsonTemplatePath = claspOption.claspJsonTemplatePath;
     }
     push(scriptId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -114,15 +115,23 @@ class ClaspWrapperImpl {
     }
     setupAppsScriptJson(appsscriptJsonPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield io.cp(appsscriptJsonPath, path_1.default.join(this.projectRootPath, this.sourceRootDir, 'appsscript.json'));
+            yield io.cp(appsscriptJsonPath, path_1.default.join(this.projectRootPath, this.sourceRootDir || '.', 'appsscript.json'));
             core.debug(`appsscript.json generated: ${appsscriptJsonPath}`);
         });
     }
     createClaspJson(scriptId) {
-        const json = {
-            scriptId,
-            rootDir: this.sourceRootDir
-        };
+        let json;
+        if (this.claspJsonTemplatePath) {
+            const text = JSON.stringify(fs_1.default.readFileSync(this.claspJsonTemplatePath, 'utf8'));
+            json = JSON.parse(text);
+            json.scriptId = scriptId;
+        }
+        else {
+            json = { scriptId };
+        }
+        if (this.sourceRootDir) {
+            json.rootDir = this.sourceRootDir;
+        }
         const output = JSON.stringify(json);
         fs_1.default.writeFileSync(path_1.default.join(this.projectRootPath, '.clasp.json'), output);
         core.debug(`.clasp.json generated: ${output}`);
@@ -203,6 +212,9 @@ function run() {
             const appsscriptJsonPath = core.getInput('appsscriptJsonPath', {
                 required: false
             });
+            const claspJsonTemplatePath = core.getInput('claspJsonTemplatePath', {
+                required: false
+            });
             if (command === 'check') {
                 yield (0, exec_1.exec)('clasp', ['--version']);
                 return;
@@ -212,7 +224,8 @@ function run() {
             const claspWrapper = new claspWrapper_1.ClaspWrapperImpl({
                 sourceRootDir,
                 projectRootPath,
-                appsscriptJsonPath
+                appsscriptJsonPath,
+                claspJsonTemplatePath
             });
             switch (command) {
                 case 'push':

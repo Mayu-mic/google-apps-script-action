@@ -40,6 +40,10 @@ Root directory of script source (relative to project root).
 
 The path to appsscript.json. If specified, the file will be changed to the specified file when the command is executed.
 
+### `claspJsonTemplatePath`
+
+The path to the clasp.json template. If specified, .clasp.json will be created from this file.
+
 Outputs
 ---
 
