@@ -120,9 +120,7 @@ export class ClaspWrapperImpl implements ClaspWrapper {
   private createClaspJson(scriptId: string): void {
     let json: ClaspJson;
     if (this.claspJsonTemplatePath) {
-      const text = JSON.stringify(
-        fs.readFileSync(this.claspJsonTemplatePath, 'utf8')
-      );
+      const text = fs.readFileSync(this.claspJsonTemplatePath, 'utf8');
       json = JSON.parse(text);
       json.scriptId = scriptId;
     } else {

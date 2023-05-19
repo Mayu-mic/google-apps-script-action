@@ -122,7 +122,7 @@ class ClaspWrapperImpl {
     createClaspJson(scriptId) {
         let json;
         if (this.claspJsonTemplatePath) {
-            const text = JSON.stringify(fs_1.default.readFileSync(this.claspJsonTemplatePath, 'utf8'));
+            const text = fs_1.default.readFileSync(this.claspJsonTemplatePath, 'utf8');
             json = JSON.parse(text);
             json.scriptId = scriptId;
         }
