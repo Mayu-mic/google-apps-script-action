@@ -26,6 +26,8 @@ inputs:
   appsscriptJsonPath:
     description: "appsscript.json path"
     required: false
+  claspJsonTemplatePath:
+    description: ".clasp.json template path"
 outputs:
   deploymentId:
     description: "Created deployment ID (when only deploy command)"

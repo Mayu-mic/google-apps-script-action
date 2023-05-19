@@ -14,6 +14,7 @@ interface ClaspOption {
   sourceRootDir?: string;
   projectRootPath?: string;
   appsscriptJsonPath?: string;
+  claspJsonTemplatePath?: string;
 }
 
 interface DeployOption {
@@ -37,14 +38,16 @@ interface ClaspOutput {
 }
 
 export class ClaspWrapperImpl implements ClaspWrapper {
-  private sourceRootDir: string;
   private projectRootPath: string;
+  private sourceRootDir?: string;
   private appsscriptJsonPath?: string;
+  private claspJsonTemplatePath?: string;
 
   constructor(claspOption: ClaspOption = {}) {
-    this.sourceRootDir = claspOption.sourceRootDir || '.';
     this.projectRootPath = claspOption.projectRootPath || '.';
+    this.sourceRootDir = claspOption.sourceRootDir;
     this.appsscriptJsonPath = claspOption.appsscriptJsonPath;
+    this.claspJsonTemplatePath = claspOption.claspJsonTemplatePath;
   }
 
   async push(scriptId: string): Promise<void> {
@@ -105,16 +108,29 @@ export class ClaspWrapperImpl implements ClaspWrapper {
   private async setupAppsScriptJson(appsscriptJsonPath: string): Promise<void> {
     await io.cp(
       appsscriptJsonPath,
-      path.join(this.projectRootPath, this.sourceRootDir, 'appsscript.json')
+      path.join(
+        this.projectRootPath,
+        this.sourceRootDir || '.',
+        'appsscript.json'
+      )
     );
     core.debug(`appsscript.json generated: ${appsscriptJsonPath}`);
   }
 
   private createClaspJson(scriptId: string): void {
-    const json: ClaspJson = {
-      scriptId,
-      rootDir: this.sourceRootDir
-    };
+    let json: ClaspJson;
+    if (this.claspJsonTemplatePath) {
+      const text = JSON.stringify(
+        fs.readFileSync(this.claspJsonTemplatePath, 'utf8')
+      );
+      json = JSON.parse(text);
+      json.scriptId = scriptId;
+    } else {
+      json = { scriptId };
+    }
+    if (this.sourceRootDir) {
+      json.rootDir = this.sourceRootDir;
+    }
     const output = JSON.stringify(json);
     fs.writeFileSync(path.join(this.projectRootPath, '.clasp.json'), output);
     core.debug(`.clasp.json generated: ${output}`);
