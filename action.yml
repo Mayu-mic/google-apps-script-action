@@ -1,6 +1,9 @@
 name: "Google Apps Script Action"
 description: "Push, deploy or versioning of Google Apps Script Project using Clasp"
 author: "Ryo Koizumi <koizumiryo@gmail.com>"
+branding:
+  icon: "arrow-up-circle"
+  color: "blue"
 inputs:
   clasprc:
     description: "Clasp configuration file"
