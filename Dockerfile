@@ -1,5 +1,5 @@
 # Container image that runs your code
-FROM node:16-bullseye-slim 
+FROM node:20-alpine
 
 RUN npm install -g @google/clasp
 
