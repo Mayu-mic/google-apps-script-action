@@ -61,7 +61,7 @@ Example usage
 ### Push
 
 ```yaml
-- uses: Mayu-mic/google-apps-script-action@v1
+- uses: Mayu-mic/google-apps-script-action@v2
   with:
     clasprc: ${{ secrets.CLASPRC_JSON }}
     scriptId: ${{ secrets.SCRIPT_ID }}
@@ -71,7 +71,7 @@ Example usage
 ### Deploy with deployment id and description
 
 ```yaml
-- uses: Mayu-mic/google-apps-script-action@v1
+- uses: Mayu-mic/google-apps-script-action@v2
   with:
     clasprc: ${{ secrets.CLASPRC_JSON }}
     scriptId: ${{ secrets.SCRIPT_ID }}
@@ -83,7 +83,7 @@ Example usage
 ### Versioning Library
 
 ```yaml
-- uses: Mayu-mic/google-apps-script-action@v1
+- uses: Mayu-mic/google-apps-script-action@v2
   with:
     clasprc: ${{ secrets.CLASPRC_JSON }}
     scriptId: ${{ secrets.SCRIPT_ID }}
