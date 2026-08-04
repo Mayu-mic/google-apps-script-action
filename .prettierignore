@@ -1,3 +1,5 @@
-dist/
+push/dist/
+deploy/dist/
+version/dist/
 lib/
 node_modules/

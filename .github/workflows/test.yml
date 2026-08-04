@@ -11,16 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
       - run: |
           npm install
       - run: |
           npm run all
-  test: # make sure the action works on a clean machine without building
+  test: # make sure the action starts and validates inputs without credentials
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./
-        with:
-          clasprc: dummy
-          scriptId: dummy
-          command: check
+      - name: Smoke test input validation
+        run: |
+          set +e
+          OUTPUT=$(INPUT_CLASPRC='{}' INPUT_SCRIPTID=dummy node push/dist/index.js 2>&1)
+          STATUS=$?
+          set -e
+          echo "$OUTPUT"
+          if [ "$STATUS" -eq 0 ]; then
+            echo "Expected a non-zero exit status"
+            exit 1
+          fi
+          echo "$OUTPUT" | grep -q "Please provide the contents"

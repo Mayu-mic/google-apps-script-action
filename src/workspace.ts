@@ -54,10 +54,17 @@ export async function createProjectFile(
 ): Promise<string> {
   let project: Record<string, unknown> = {};
   if (options.claspJsonTemplatePath !== undefined) {
+    let templateContents: string;
     try {
-      const parsed = JSON.parse(
-        await readFile(options.claspJsonTemplatePath, 'utf8')
-      ) as unknown;
+      templateContents = await readFile(options.claspJsonTemplatePath, 'utf8');
+    } catch {
+      throw new Error(
+        `Unable to read clasp JSON template: ${options.claspJsonTemplatePath}`
+      );
+    }
+
+    try {
+      const parsed = JSON.parse(templateContents) as unknown;
       if (
         typeof parsed !== 'object' ||
         parsed === null ||

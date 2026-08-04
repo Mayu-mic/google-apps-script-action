@@ -1,0 +1,34 @@
+name: "Google Apps Script Version"
+description: "Push and create a version of a Google Apps Script project using Clasp"
+author: "Ryo Koizumi <koizumiryo@gmail.com>"
+branding:
+  icon: "arrow-up-circle"
+  color: "blue"
+inputs:
+  clasprc:
+    description: "Clasp configuration file"
+    required: true
+  scriptId:
+    description: "Google Apps Script Script ID"
+    required: true
+  projectRootPath:
+    description: "Project root path"
+    required: false
+  sourceRootDir:
+    description: "Source root directory (relative to project root)"
+    required: false
+  appsscriptJsonPath:
+    description: "appsscript.json path"
+    required: false
+  claspJsonTemplatePath:
+    description: ".clasp.json template path"
+    required: false
+  description:
+    description: "Description of the version"
+    required: false
+outputs:
+  versionNumber:
+    description: "Created version number"
+runs:
+  using: "node24"
+  main: "dist/index.js"

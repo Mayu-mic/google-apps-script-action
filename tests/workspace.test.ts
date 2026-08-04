@@ -188,6 +188,22 @@ describe('createProjectFile', () => {
     ).rejects.toThrow(templatePath);
   });
 
+  test('reports a read error with the template path when the file is missing', async () => {
+    const templatePath = path.join(
+      process.env.RUNNER_TEMP as string,
+      'missing-template.json'
+    );
+    const workspace = await createTemporaryWorkspace();
+
+    await expect(
+      createProjectFile(workspace, {
+        projectRootPath: '/repository',
+        scriptId: 'script-id',
+        claspJsonTemplatePath: templatePath
+      })
+    ).rejects.toThrow(`Unable to read clasp JSON template: ${templatePath}`);
+  });
+
   test.each(['null', '[1,2]', '"x"'])(
     'rejects a non-object template %s with its path',
     async templateContents => {
