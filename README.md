@@ -28,6 +28,10 @@ Description of the deployment.
 
 Deployment ID
 
+### `versionNumber`
+
+Version number to deploy.
+
 ### `projectRootPath`
 
 Project root path.

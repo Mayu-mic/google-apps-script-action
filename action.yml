@@ -20,6 +20,9 @@ inputs:
   deploymentId:
     description: "Deployment ID"
     required: false
+  versionNumber:
+    description: "Version number to deploy"
+    required: false
   projectRootPath:
     description: "Project root path"
     required: false

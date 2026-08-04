@@ -55,7 +55,7 @@ async function run(): Promise<void> {
             description,
             deploymentId,
             versionNumber:
-              versionNumber === undefined ? Number(versionNumber) : undefined
+              versionNumber !== '' ? Number(versionNumber) : undefined
           });
         core.setOutput('versionNumber', newVersion ?? '');
         core.setOutput('deploymentId', newDeploymentId ?? '');
