@@ -235,7 +235,7 @@ function run() {
                     const { versionNumber: newVersion, deploymentId: newDeploymentId } = yield claspWrapper.deploy(scriptId, {
                         description,
                         deploymentId,
-                        versionNumber: versionNumber === undefined ? Number(versionNumber) : undefined
+                        versionNumber: versionNumber !== '' ? Number(versionNumber) : undefined
                     });
                     core.setOutput('versionNumber', newVersion !== null && newVersion !== void 0 ? newVersion : '');
                     core.setOutput('deploymentId', newDeploymentId !== null && newDeploymentId !== void 0 ? newDeploymentId : '');
