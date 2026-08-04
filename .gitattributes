@@ -1,1 +1,3 @@
-dist/** -diff linguist-generated=true 
+push/dist/** -diff linguist-generated=true
+deploy/dist/** -diff linguist-generated=true
+version/dist/** -diff linguist-generated=true

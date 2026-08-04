@@ -1,0 +1,40 @@
+name: Verify v3
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # SCRIPT_ID must refer to a dedicated verification GAS project because these steps replace its content.
+
+      - name: Push Apps Script project
+        uses: ./push
+        with:
+          clasprc: ${{ secrets.CLASPRC_JSON }}
+          scriptId: ${{ secrets.SCRIPT_ID }}
+          projectRootPath: .github/fixtures/gas-project
+
+      - name: Create Apps Script version
+        id: version
+        uses: ./version
+        with:
+          clasprc: ${{ secrets.CLASPRC_JSON }}
+          scriptId: ${{ secrets.SCRIPT_ID }}
+          projectRootPath: .github/fixtures/gas-project
+          description: "Manual v3 verification"
+
+      - name: Verify version output
+        env:
+          VERSION_NUMBER: ${{ steps.version.outputs.versionNumber }}
+        run: test -n "$VERSION_NUMBER"
+
+      # Add this step only when a real deployment is intentionally required.
+      # - name: Deploy Apps Script project
+      #   uses: ./deploy
+      #   with:
+      #     clasprc: ${{ secrets.CLASPRC_JSON }}
+      #     scriptId: ${{ secrets.SCRIPT_ID }}
